@@ -1,31 +1,30 @@
 import React, {useState, useEffect} from 'react'
 import Totalcard from '../../components/Totalcard/Totalcard';
 import Loading from '../../components/Loading/Loading';
+import { Alert } from '@mui/material';
 
 const Home = () => {
   const [card, setCard] = useState([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [error,setError] = useState("")
 
 
   // Function for fetching api.......
 
   const getCardData = async () => {
-    const res = await fetch(
+    await fetch(
       `https://jsonplaceholder.typicode.com/posts?_limit=10&_page=${page}`
-    );
-    const data = await res.json();
-    console.log(data);
+    )
+      .then(res => res.json())
 
+      // Get the data and set to the card (useState)....
 
-    // Got the data and set to the card (useState)....
-
-
-    setCard((prev) => [...prev, ...data]);
-
+      .then(res => setCard((prev) => [...prev, ...res]))
+      .catch(err => setError(err));
 
     // when i got the next data then we have to set  false to the loader....
-    
+
     setLoading(false);
   };
 
@@ -70,6 +69,7 @@ const Home = () => {
   return (
     <>
       <Totalcard cardData={card} />
+      {error && <Alert severity="error">{error}</Alert>}
       {loading && <Loading/>}
     </>
   );
